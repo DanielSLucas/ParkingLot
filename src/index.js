@@ -1,38 +1,44 @@
 const { Gpio  } = require("onoff");
+const { io } = require("socket.io-client");
+
+const socket = io("http://localhost:3333")
 
 const sensors = [
   {
-    name: "Sensor 1",
+    id: 1,
     outPin: new Gpio(23, 'in', 'both', { debounceTimeout: 10 }),
     enPin: new Gpio(24, 'out')
   },
   {
-    name: "Sensor 2",
+    id: 2,
     outPin: new Gpio(25, 'in', 'both', { debounceTimeout: 10 }),
     enPin: null
   }
 ]
 
 console.log(`Numbers of sensors: ${sensors.length}`);
+
+socket.emit("sensors", sensors);
+
 console.log('Starting...');
 
 for (const sensor of sensors) {
-  console.log(`Setting up ${sensor.name}`);
+  console.log(`Setting up Sensor ${sensor.id}`);
   if (sensor.enPin) {
     sensor.enPin.writeSync(1);
   }
 
   sensor.outPin.watch((err, value) => {  
     if(err) {
-      console.error(`${sensor.name} error: `, err);
+      console.error(`${sensor.id} error: `, err);
       return;
     }
   
     if (value === 0) {
-      console.log(`${sensor.name} detected something!`);
+      console.log(`Sensor ${sensor.id} detected something!`);
     }  
   });
-  console.log(`${sensor.name} set up!`);
+  console.log(`Sensor ${sensor.id} set up!`);
 }
 
 process.on("SIGINT", () => {

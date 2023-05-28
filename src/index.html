@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estacionamento</title>
+
+  <style>
+    main {
+      width: 100vw;
+      height: 100vh;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .parking-spots-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem
+    }
+
+    .parking-spot {
+      width: 5rem;
+      height: 8rem;
+
+      border: 1px solid #000;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 1.5rem;
+
+      transition: all 0.2s;
+    }
+
+    .parking-spot.empty {
+      color: #198754;
+
+      border-width: 3px;
+      border-color: #198754;
+
+      background-color: #1987540e;
+    }
+
+    .parking-spot.occupied {
+      color: #dc3545;
+      
+      border-width: 3px;
+      border-color: #dc3545;
+
+      background-color: #dc35460e;
+    }
+  </style>
+
+
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    var socket = io("http://localhost:3333");
+  </script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Vagas:</h1>
+    </header>
+
+    <div class="parking-spots-wrapper">
+      <div class="parking-spot occupied">
+        <strong>1</strong>
+      </div>
+
+      <div class="parking-spot empty">
+        <strong>2</strong>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
