@@ -16,6 +16,8 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
   console.log("Socket: ", socket.id);
 
+  socket.emit("parking-spots", parkingSpots)
+
   socket.on("parking-spots", (data) => {
     parkingSpots = data;
     
