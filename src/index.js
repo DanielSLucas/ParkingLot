@@ -1,38 +1,45 @@
 const { Gpio  } = require("onoff");
 
-const ir1 = new Gpio(23, 'in', 'both', { debounceTimeout: 10 });
-const ir2 = new Gpio(25, 'in', 'both', { debounceTimeout: 10 });
-const en = new Gpio(24, 'out');
+const sensors = [
+  {
+    name: "Sensor 1",
+    outPin: new Gpio(23, 'in', 'both', { debounceTimeout: 10 }),
+    enPin: new Gpio(24, 'out')
+  },
+  {
+    name: "Sensor 2",
+    outPin: new Gpio(25, 'in', 'both', { debounceTimeout: 10 }),
+    enPin: null
+  }
+]
 
-console.log('Executando...');
+console.log(`Numbers of sensors: ${sensors.length}`);
+console.log('Starting...');
 
-en.writeSync(1);
-
-ir1.watch((err, value) => {  
-  if(err) {
-    console.error('Erro ao ler o pino', err);
-    return;
+for (const sensor of sensors) {
+  console.log(`Setting up ${sensor.name}`);
+  if (sensor.enPin) {
+    sensor.enPin.writeSync(1);
   }
 
-  if (value === 0) {
-    console.log("Ir1 ativado");
-  }  
-});
-
-ir2.watch((err, value) => {  
-  if(err) {
-    console.error('Erro ao ler o pino', err);
-    return;
-  }
-
-  if (value === 0) {
-    console.log("Ir2 ativado");
-  }  
-});
+  sensor.outPin.watch((err, value) => {  
+    if(err) {
+      console.error(`${sensor.name} error: `, err);
+      return;
+    }
+  
+    if (value === 0) {
+      console.log(`${sensor.name} detected something!`);
+    }  
+  });
+  console.log(`${sensor.name} set up!`);
+}
 
 process.on("SIGINT", () => {
-  ir1.unwatch();
-  ir2.unwatch();
-  console.log('\nEncerrando programa...');
+  for (const sensor of sensors) {
+    sensor.outPin.unwatch();
+    sensor.outPin.unexport();
+  }
+  console.log('\nStoping...');
   process.exit(0);
 });
