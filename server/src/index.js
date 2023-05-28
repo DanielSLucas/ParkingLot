@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3333;
 let parkingSpots = [];
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(process.cwd() + '/public/index.html');
 });
 
 io.on("connection", (socket) => {
