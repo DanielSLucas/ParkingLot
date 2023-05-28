@@ -59,7 +59,26 @@
 
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script>
-    var socket = io("http://localhost:3333");
+    const host = window.location.host;
+    const socket = io(`http://${host}`);
+
+    socket.on("parking-spots", (data) => {
+      const parkingSpotsWrapper = document.querySelector("div.parking-spots-wrapper");
+      
+      parkingSpotsWrapper.innerHTML = data.map(spot => `
+        <div id="${spot.id}" class="parking-spot ${spot.empty ? 'empty' : 'occupied'}">
+          <strong>${spot.id}</strong>
+        </div>
+      `).join("\n");
+    })
+
+    socket.on("parking-spot-updated", (parkingSpot) => {
+      const spotDiv = document.getElementById(String(parkingSpot.id));
+
+      const spotClass = parkingSpot.empty ? 'empty' : 'occupied';
+
+      spotDiv.className = `${spotDiv.className.split(' ')[0]} ${spotClass}`
+    });
   </script>
 </head>
 <body>
@@ -68,15 +87,7 @@
       <h1>Vagas:</h1>
     </header>
 
-    <div class="parking-spots-wrapper">
-      <div class="parking-spot occupied">
-        <strong>1</strong>
-      </div>
-
-      <div class="parking-spot empty">
-        <strong>2</strong>
-      </div>
-    </div>
+    <div class="parking-spots-wrapper"></div>
   </main>
 </body>
 </html>

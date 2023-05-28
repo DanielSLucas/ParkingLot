@@ -7,6 +7,7 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 const PORT = process.env.PORT || 3333;
+let parkingSpots = [];
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + '/index.html');
@@ -15,8 +16,17 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
   console.log("Socket: ", socket.id);
 
-  socket.on("sensors", (data) => {
-    console.log("Received!", data);
+  socket.on("parking-spots", (data) => {
+    parkingSpots = data;
+    
+    socket.broadcast.emit("parking-spots", parkingSpots)
+  })
+
+  socket.on("parking-spot-updated", (parkingSpot) => {
+    const spotIndex = parkingSpots.findIndex(spot => spot.id === parkingSpot.id);
+    parkingSpots[spotIndex] = parkingSpot;
+
+    socket.broadcast.emit("parking-spot-updated", parkingSpot);
   })
 
   socket.on('disconnect', () => {

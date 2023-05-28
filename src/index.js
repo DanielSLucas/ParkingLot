@@ -16,9 +16,11 @@ const sensors = [
   }
 ]
 
+const parkingSpots = sensors.map(sensor => ({ id: sensor.id, empty: true }))
+
 console.log(`Numbers of sensors: ${sensors.length}`);
 
-socket.emit("sensors", sensors);
+socket.emit("parking-spots", parkingSpots);
 
 console.log('Starting...');
 
@@ -34,9 +36,19 @@ for (const sensor of sensors) {
       return;
     }
   
-    if (value === 0) {
+    const spotIndex = parkingSpots.findIndex(spot => spot.id === sensor.id);
+    const spotOldState = parkingSpots[spotIndex];
+
+    if (value === 0 && spotIndex !== -1) {
       console.log(`Sensor ${sensor.id} detected something!`);
-    }  
+      parkingSpots[spotIndex].empty = false;
+    } else {
+      parkingSpots[spotIndex].empty = true;
+    }
+
+    if (spotOldState.empty !== parkingSpots[spotIndex].empty) {
+      socket.emit("parking-spot-updated", parkingSpots[spotIndex]);
+    }
   });
   console.log(`Sensor ${sensor.id} set up!`);
 }
