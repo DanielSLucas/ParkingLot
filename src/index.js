@@ -37,7 +37,7 @@ for (const sensor of sensors) {
     }
   
     const spotIndex = parkingSpots.findIndex(spot => spot.id === sensor.id);
-    const spotOldState = parkingSpots[spotIndex];
+    const spotOldState = { ...parkingSpots[spotIndex] };
 
     if (value === 0 && spotIndex !== -1) {
       console.log(`Sensor ${sensor.id} detected something!`);
