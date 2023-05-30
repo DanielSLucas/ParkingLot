@@ -1,4 +1,4 @@
-FROM balenalib/raspberry-pi-alpine-node 
+FROM arm32v7/node:lts-slim
 
 WORKDIR /usr/app
 
@@ -6,11 +6,11 @@ COPY ./package.json ./
 
 COPY ./package-lock.json ./
 
-# RUN npm install -g npm
-
-# RUN npm ci
-
 COPY . .
+
+RUN npm install -g npm
+
+RUN npm ci
 
 EXPOSE 3333
 
